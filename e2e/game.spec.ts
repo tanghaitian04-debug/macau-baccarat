@@ -19,7 +19,7 @@ test('available WebGL renderer mounts a live canvas without fatal application er
 test('four real pointer directions deform the owned card without revealing or scrolling on release',async({page})=>{
  await enter(page);if(!await page.locator('.scene canvas').count()){test.skip(true,'WebGL unavailable for pointer mesh QA');return;}
  await page.locator('.bet-P').click();await page.getByRole('button',{name:'停止下注 · 开始开牌',exact:true}).click();await page.getByRole('button',{name:/庄家先开牌/}).click();await page.getByRole('button',{name:/开始咪闲牌/}).click();await page.getByText('闲家咪牌',{exact:false}).waitFor();
- const before=await snapshot(page);const canvas=page.locator('.scene canvas'),box=(await canvas.boundingBox())!;const x=box.x+box.width/2,y=box.y+box.height/2;
+ await expect(page.locator('.squeeze-hud')).toHaveAttribute('data-camera-ready','true');const before=await snapshot(page);const canvas=page.locator('.scene canvas'),box=(await canvas.boundingBox())!;const x=box.x+box.width/2,y=box.y+box.height/2;
  // Wait on an actual rendered transition rather than replacing the app's game state.
  await expect(page.locator('.peel-meter b')).toHaveText('0%');
  for(const [dx,dy]of [[0,-90],[0,90],[-90,0],[90,0]]){await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+dx,y+dy,{steps:16});await expect(page.locator('.peel-meter b')).not.toHaveText('0%');await page.mouse.up();await expect(page.locator('.peel-meter b')).toHaveText('0%');expect((await snapshot(page)).revealed).toEqual(before.revealed);expect(await page.evaluate(()=>window.scrollY)).toBe(0);}
