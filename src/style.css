@@ -22,3 +22,5 @@
 .reset-confirm{z-index:200}.table-actions{gap:8px;flex-wrap:wrap}.is-squeezing .topbar{z-index:95;pointer-events:none}.is-squeezing .top-actions{pointer-events:auto}.is-squeezing .topbar .brand,.is-squeezing .table-id{visibility:hidden}
 
 .is-squeezing .topbar{opacity:1;z-index:13}.modal-backdrop{z-index:100}.reset-confirm{z-index:200}
+
+.is-squeezing .top-actions button:first-child{display:none}.squeeze-hud .focus-title{padding-right:max(115px,calc(env(safe-area-inset-right) + 105px))}
