@@ -114,7 +114,7 @@ speak({
 
 已提供 `.github/workflows/pages.yml`：Node 22、`npm ci`、Vitest报告、生产构建、Pages artifact及OIDC部署。PR只测试构建，不部署；main推送可部署。把工程放入你拥有的GitHub仓库，并在 Settings → Pages → Source 选择 GitHub Actions 后可运行。
 
-当前连接器没有创建GitHub仓库的能力，用户也没有指定目标仓库，因而没有冒用现有仓库或声称GitHub Pages已上线。此次另行提供可访问的网页托管地址。测试报告与源码包一起交付。
+已创建独立仓库 `tanghaitian04-debug/macau-baccarat`，GitHub Pages 自动部署成功，并已绑定 https://game.saka77.cn/、配置 DNSPod CNAME 和启用强制 HTTPS。部署详情见 `部署说明-game.saka77.cn.md`。
 
 ## 质量验证边界
 
