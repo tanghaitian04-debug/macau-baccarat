@@ -12,7 +12,7 @@ describe('Punto Banco complete drawing matrix',()=>{
 describe('integer payouts, independent bets',()=>{
  const bets={...emptyBets(),P:10000,B:10000,T:10000,PP:10000,BP:10000,D7:10000};
  const tie=result([c(4),c(4,1)],[c(9),c(9,1)]);
- it('tie refunds both main stakes, pays 8:1 and both pairs 11:1',()=>{expect(settle(bets,tie,'commission').returns).toEqual({P:10000,B:10000,T:90000,PP:120000,BP:120000,D7:0});});
+ it('tie refunds both main stakes, pays 8:1 and both pairs 11:1',()=>{expect(settle(bets,tie,'commission').returns).toEqual({...emptyBets(),P:10000,B:10000,T:90000,PP:120000,BP:120000,D7:0});});
  it('5% commission returns principal separately',()=>{const r=result([c(2),c(3)],[c(4),c(3)]);expect(settle({...emptyBets(),B:10000},r,'commission')).toMatchObject({stake:10000,paid:19500,net:9500});});
  it('super6 half profit for either two or three card six',()=>{for(const hand of [[c(3),c(3)],[c(1),c(2),c(3)]])expect(settle({...emptyBets(),B:10000},result([c(1),c(2)],hand),'super6').paid).toBe(15000);});
  it('dragon three-card seven main push / player loss / side payout',()=>{const r=result([c(2),c(3)],[c(1),c(2),c(4)]);expect(settle(bets,r,'dragon').returns).toMatchObject({B:10000,P:0,T:0,D7:410000});});

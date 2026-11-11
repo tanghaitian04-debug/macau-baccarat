@@ -2,3 +2,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 .openai/*.tar.gz
+
+test-results/
+playwright-report/
+browser-test-report.json

@@ -1,0 +1,2 @@
+import * as THREE from 'three';
+export function fabricTexture(){const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d')!,image=ctx.createImageData(256,256);let seed=5346;for(let i=0;i<image.data.length;i+=4){seed=(seed*1664525+1013904223)>>>0;const n=seed%20;image.data[i]=12+n*.3;image.data[i+1]=72+n;image.data[i+2]=52+n*.55;image.data[i+3]=255;}ctx.putImageData(image,0,0);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(5,5);t.colorSpace=THREE.SRGBColorSpace;return t;}
