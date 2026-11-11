@@ -27,14 +27,14 @@ export function result(player:Card[],banker:Card[]):Result {
 export function settle(bets:Bets,r:Result,mode:Mode,table:LuckyTable=DEFAULT_LUCKY_TABLE) {
  const returns=emptyBets();
  for(const key of Object.keys(bets) as Bet[]) {
-  const n=bets[key]; if(!BET_KEYS.includes(key))throw new Error('未知投注项目'); if(!Number.isSafeInteger(n)||n<0||n%1000!==0)throw new Error('下注须为10筹码的整数倍');
+  const n=bets[key]; if(!BET_KEYS.includes(key))throw new Error('未知投注项目'); if(!Number.isSafeInteger(n)||n<0)throw new Error('下注须为非负整数分');
   if(key==='PP'&&r.pp||key==='BP'&&r.bp) returns[key]=n*12;
   if(key==='D7'&&r.dragon)returns[key]=n*41;
   const odds=luckyOdds(key,r,table);if(odds!==null)returns[key]=n*(odds+1);
   if(key==='T'&&r.winner==='T')returns[key]=n*9;
   if((key==='P'||key==='B')&&r.winner==='T')returns[key]=n;
   if(key==='P'&&r.winner==='P')returns[key]=n*2;
-  if(key==='B'&&r.winner==='B')returns[key]=mode==='commission'?n*195/100:mode==='super6'&&r.b===6?n*3/2:mode==='dragon'&&r.dragon?n:n*2;
+  if(key==='B'&&r.winner==='B')returns[key]=mode==='commission'?n+Number(BigInt(n)*95n/100n):mode==='super6'&&r.b===6?n+Number(BigInt(n)/2n):mode==='dragon'&&r.dragon?n:n*2;
  }
  const stake=Object.values(bets).reduce((a,b)=>a+b,0),paid=Object.values(returns).reduce((a,b)=>a+b,0);
  if(![stake,paid,paid-stake,...Object.values(returns)].every(Number.isSafeInteger))throw new Error('金额超出安全整数范围');

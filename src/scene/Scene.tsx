@@ -11,7 +11,7 @@ import gsap from 'gsap';
 import {CardMesh} from '../cards/CardMesh';
 import {labelTexture} from '../cards/texture';
 import {useGame} from '../game/store';
-import {ordered,reveal,squeezeCards,primarySide} from '../game/engine';
+import {ordered,reveal,squeezeCards,primarySide,canSkip,skipRound} from '../game/engine';
 import {type Bet} from '../rules/baccarat';
 import {fx} from '../audio/audio';
 const positions:Record<string,[number,number,number]>={P:[-1.65,.53,1.2],B:[1.65,.53,1.2],T:[0,.53,1.05],PP:[-2.7,.53,.25],BP:[2.7,.53,.25],D7:[0,.53,1.9]};
@@ -60,5 +60,5 @@ export function Scene(){return <SceneBoundary><SceneCanvas/></SceneBoundary>;}
 export function SqueezeView({onClose}:{onClose:()=>void}){
  const cameraReady=useGame(s=>s.cameraReady);const g=useGame(s=>s.game),progress=useGame(s=>s.peelProgress),dispatch=useGame(s=>s.dispatch),pending=squeezeCards(g),side=primarySide(g),name=side==='B'?'庄':'闲',c=pending[0],other=side==='B'?g.player:g.banker,shown=other.length&&other.every(c=>g.revealed.includes(c.id));
  useEffect(()=>{useGame.setState({focusCard:c?.id??null,peelProgress:0,cameraReady:false});return()=>{useGame.setState({focusCard:null,peelProgress:0,cameraReady:false});};},[c?.id]);
- return <div data-camera-ready={cameraReady} className={`squeeze-hud ${side==='B'?'banker':'player'}`}><div className="focus-title"><span>{name}家咪牌 <small>正在咪牌：{name} · 对方{shown?`${other.reduce((a,c)=>a+(c.rank<10?c.rank:0),0)%10}点`:'尚未开牌'}</small></span><button onClick={onClose}>返回桌面</button></div><div className="peel-meter"><span style={{width:`${progress*100}%`}}/><b>{Math.round(progress*100)}%</b></div><div className="squeeze-instructions">按住大牌滑动 · ↑上边 ↓下边 ←右边 →左边 · 松手回弹</div><div className="focus-foot"><span>剩余 {pending.length} 张 · 仅可咪{name}家</span><button disabled={!c} onClick={()=>{if(c)dispatch(x=>reveal(x,c.id));}}>直接开牌</button></div></div>;
+ return <div data-camera-ready={cameraReady} className={`squeeze-hud ${side==='B'?'banker':'player'}`}><div className="focus-title"><span>{name}家咪牌 <small>正在咪牌：{name} · 对方{shown?`${other.reduce((a,c)=>a+(c.rank<10?c.rank:0),0)%10}点`:'尚未开牌'}</small></span><button onClick={onClose}>返回桌面</button></div><div className="peel-meter"><span style={{width:`${progress*100}%`}}/><b>{Math.round(progress*100)}%</b></div><div className="squeeze-instructions">按住大牌滑动 · ↑上边 ↓下边 ←右边 →左边 · 松手回弹</div><div className="focus-foot">{canSkip(g)&&<button onClick={()=>{onClose();dispatch(skipRound);}}>跳过本局</button>}<span>剩余 {pending.length} 张 · 仅可咪{name}家</span><button disabled={!c} onClick={()=>{if(c)dispatch(x=>reveal(x,c.id));}}>直接开牌</button></div></div>;
 }

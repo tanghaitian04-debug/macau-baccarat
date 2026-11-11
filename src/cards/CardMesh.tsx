@@ -10,9 +10,10 @@ import {useGame} from '../game/store';
 import {dealPose} from '../dealer/choreography';
 export {foldDirection} from './squeeze';
 export function CardMesh({card,position,open,enabled,onReveal,large=false}:{card:Card;position:[number,number,number];open:boolean;enabled:boolean;onReveal:()=>void;large?:boolean}){
+ const faceMode=useGame(s=>s.settings.cardFace);
  const group=useRef<THREE.Group>(null),paper=useRef<THREE.Group>(null),state=useRef<Squeeze>({active:false,progress:0,revealed:open}),start=useRef({x:0,y:0,axis:0 as 0|1,sign:1 as 1|-1,locked:false}),motion=useRef({p:0,flip:open?Math.PI:0}),pulse=useRef(0),lastShape=useRef(-1),pointer=useRef<number|null>(null);
  const geo=useMemo(()=>new THREE.PlaneGeometry(.78,1.15,32,48),[]),original=useMemo(()=>new Float32Array(geo.attributes.position.array),[geo]);
- const front=useMemo(()=>{const t=cardTexture(card).clone();t.repeat.x=-1;t.offset.x=1;t.needsUpdate=true;return t;},[card.rank,card.suit]);
+ const front=useMemo(()=>{const t=cardTexture(card,faceMode).clone();t.repeat.x=-1;t.offset.x=1;t.needsUpdate=true;return t;},[card.rank,card.suit,faceMode]);
  useEffect(()=>()=>{geo.dispose();front.dispose();},[geo,front]);
  useEffect(()=>{state.current=open?{active:false,progress:1,revealed:true}:{active:false,progress:0,revealed:false};gsap.to(motion.current,{p:0,flip:open?Math.PI:0,duration:.6,ease:'power2.inOut'});},[open]);
  useEffect(()=>()=>{gsap.killTweensOf(motion.current);},[]);
