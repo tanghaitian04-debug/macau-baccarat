@@ -7,7 +7,7 @@ function ready(g=E.initial()) {for(let n=0;n<6&&g.phase==='predeal';n++)g=E.adva
 function finish(g:E.Game,side:'B'|'P'|'T'='B'){
  for(let n=0;n<35&&g.phase!=='complete';n++){
   if(g.phase==='predeal'){g=E.advance(g);continue;}
-  if(g.phase==='betting'){g=E.begin(E.place(g,side,1000));continue;}
+  if(g.phase==='betting'){g=E.begin(E.total(g.bets)>0?g:E.place(g,side,1000));continue;}
   if(g.phase==='awaitOpponent'){g=E.openOpponent(g);continue;}
   if(g.phase==='awaitSqueeze'){g=E.startSqueeze(g);continue;}
   if(g.phase==='squeezing')for(const c of E.squeezeCards(g))g=E.reveal(g,c.id);
