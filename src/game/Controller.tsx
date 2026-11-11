@@ -9,7 +9,7 @@ export function Controller(){const g=useGame(s=>s.game),ready=useGame(s=>s.ready
  useEffect(()=>{if(!ready||!started)return;
   if(g.phase==='predeal'&&g.visible>0){const labels=['闲一张。','庄一张。','闲一张。','庄一张。'];speak(labels[g.visible-1]);return;}
   const side=primarySide(g),other=side==='P'?'庄':'闲';
-  const names={betting:'四张底牌已发齐，请下注。',closing:'停止下注。',awaitOpponent:side?`请先开${other}家牌。`:'请开双方牌。',awaitSqueeze:side?`请咪${side==='B'?'庄':'闲'}家牌。`:'',squeezing:'',drawing:g.handStage==='player'?'闲家补一张。':'庄家补一张。',result:g.current?`闲家${g.current.p}点，庄家${g.current.b}点。${g.current.natural?'天牌。':''}${g.current.dragon?'庄家七龙。':g.current.winner==='P'?'闲赢。':g.current.winner==='B'?'庄赢。':'和局。'}`:'',settling:'',complete:'本局结束，请准备下一局。'};
+  const names={betting:'庄一张。四张底牌已发齐，请下注。',closing:'停止下注。',awaitOpponent:side?`请先开${other}家牌。`:'请开双方牌。',awaitSqueeze:side?`请咪${side==='B'?'庄':'闲'}家牌。`:'',squeezing:'',drawing:g.handStage==='player'?'闲家补一张。':'庄家补一张。',result:g.current?`闲家${g.current.p}点，庄家${g.current.b}点。${g.current.natural?'天牌。':''}${g.current.dragon?'庄家七龙。':g.current.winner==='P'?'闲赢。':g.current.winner==='B'?'庄赢。':'和局。'}`:'',settling:'',complete:'本局结束，请准备下一局。'};
   if(names[g.phase as keyof typeof names])speak(names[g.phase as keyof typeof names]);
  },[ready,started,g.phase,g.handStage,g.visible]);
  useEffect(()=>{if(!ready||!started)return;let delay=0;let action=()=>dispatch(advance);
