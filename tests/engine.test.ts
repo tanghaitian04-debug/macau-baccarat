@@ -4,6 +4,7 @@ import {squeezeStep} from '../src/cards/squeeze';
 import {foldDirection} from '../src/cards/CardMesh';
 
 function ready(g=E.initial()) {for(let n=0;n<6&&g.phase==='predeal';n++)g=E.advance(g);expect(g.phase).toBe('betting');return g;}
+function opponent(g:E.Game){g=E.openOpponent(g);while(g.phase==='revealingOpponent')g=E.advance(g);return g;}
 function finish(g:E.Game,side:'B'|'P'|'T'='B'){
  for(let n=0;n<35&&g.phase!=='complete';n++){
   if(g.phase==='predeal'){g=E.advance(g);continue;}
@@ -27,25 +28,25 @@ describe('pre-deal and side-locked reveal game flow',()=>{
  it('one principal side at a time; other side is opened on the table first',()=>{
   let g=ready();g=E.place(g,'B',1000);expect(E.place(g,'P',1000)).toBe(g);
   g=E.advance(E.begin(g));expect(g.phase).toBe('awaitOpponent');expect(g.revealed).toHaveLength(0);
-  g=E.openOpponent(g);expect(g.phase).toBe('awaitSqueeze');expect(g.revealed).toEqual(g.player.map(c=>c.id));
+  g=opponent(g);expect(g.phase).toBe('awaitSqueeze');expect(g.revealed).toEqual(g.player.map(c=>c.id));
   expect(E.reveal(g,g.banker[0].id)).toBe(g);
   g=E.startSqueeze(g);expect(E.reveal(g,g.player[0].id)).toBe(g);
   expect(E.squeezeCards(g)).toEqual(g.banker);
   g=E.reveal(g,g.banker[0].id);expect(g.revealed).toHaveLength(3);
  });
  it('player-main bet opens banker cards and can only squeeze player',()=>{
-  let g=E.advance(E.begin(E.place(ready(),'P',1000)));g=E.openOpponent(g);
+  let g=E.advance(E.begin(E.place(ready(),'P',1000)));g=opponent(g);
   expect(g.revealed).toEqual(g.banker.map(c=>c.id));g=E.startSqueeze(g);
   expect(E.squeezeCards(g)).toEqual(g.player);
   expect(E.reveal(g,g.banker[0].id)).toBe(g);
  });
- it('side-only bet has no squeeze choice and immediately shows both hands',()=>{
-  let g=E.advance(E.begin(E.place(ready(),'PP',1000)));g=E.openOpponent(g);
-  expect(g.phase).toBe('squeezing');expect(g.revealed).toHaveLength(4);
+ it('side-only bet has no squeeze choice and automatically flips both hands',()=>{
+  let g=E.advance(E.begin(E.place(ready(),'PP',1000)));g=opponent(g);
+  expect(g.phase).toBe('checking');expect(g.revealed).toHaveLength(4);
   expect(E.squeezeCards(g)).toEqual([]);
  });
  it('skip squeeze only reveals the chosen side',()=>{
-  let g=E.advance(E.begin(E.place(ready(),'B',1000)));g=E.openOpponent(g);
+  let g=E.advance(E.begin(E.place(ready(),'B',1000)));g=opponent(g);
   const after=E.skipSqueeze(g);expect(after.phase).toBe('squeezing');expect(after.revealed).toHaveLength(4);
  });
  it('refresh while cards are face-down preserves physical cards and chips',()=>{

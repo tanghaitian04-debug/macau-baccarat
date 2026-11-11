@@ -1,0 +1,6 @@
+import {type Bet} from './baccarat';
+export const BET_INFO:Record<Bet,{name:string;english:string;odds:string;condition:string}>={
+ P:{name:'闲',english:'PLAYER',odds:'1:1',condition:'闲家最终点数大于庄家。'},B:{name:'庄',english:'BANKER',odds:'按模式',condition:'标准庄赢净赔0.95；庄六免佣模式六点半赔；七龙免佣模式七龙庄注退本。'},T:{name:'和',english:'TIE',odds:'8:1',condition:'双方最终点数相同，庄闲主注退本。'},PP:{name:'闲对',english:'PLAYER PAIR',odds:'11:1',condition:'闲家首两张牌面相同。'},BP:{name:'庄对',english:'BANKER PAIR',odds:'11:1',condition:'庄家首两张牌面相同。'},D7:{name:'七龙',english:'DRAGON 7',odds:'40:1',condition:'庄三张牌7点获胜，独立于主注模式。'},
+ L6:{name:'幸运6',english:'LUCKY 6',odds:'12 / 20:1',condition:'庄6点获胜：最终两张牌12:1，三张牌20:1。庄6闲6和局不赔。'},L7:{name:'幸运7',english:'LUCKY 7',odds:'6 / 15:1',condition:'闲7点获胜：最终两张牌6:1，三张牌15:1。和局不赔。'},S6:{name:'小幸运6',english:'SMALL LUCKY 6',odds:'22:1',condition:'庄最终两张牌6点获胜。'},B6:{name:'大幸运6',english:'BIG LUCKY 6',odds:'50:1',condition:'庄最终三张牌6点获胜。'},S7:{name:'小幸运7',english:'SMALL LUCKY 7',odds:'15:1',condition:'闲最终两张牌7点获胜。'},B7:{name:'大幸运7',english:'BIG LUCKY 7',odds:'30:1',condition:'闲最终三张牌7点获胜。'},SL7:{name:'超级幸运7',english:'SUPER LUCKY 7',odds:'30 / 40 / 100:1',condition:'闲7比庄6获胜：双方总计4张牌30:1，5张40:1，6张100:1。'}
+};
+export const MODE_DESCRIPTION='七种幸运边注在三种主注模式中均独立结算，互不覆盖。所有赔率为净盈利；总返还另含本金。幸运6/7参考理论回报83.32%/81.70%，非个人回报保证。前50局限制为可选娱乐桌规，默认关闭。';
