@@ -19,11 +19,11 @@ export function repeat(g:Game):Game {if(g.phase!=='betting')return g;const c=cle
 export function setLuckyLimit(g:Game,enabled:boolean):Game {if(g.phase!=='betting'&&g.phase!=='predeal')return g;let updated={...g,luckyFirst50:enabled};if(!luckyAllowed(updated)){const refund=LUCKY_KEYS.reduce((a,k)=>a+g.bets[k],0),bets={...g.bets};LUCKY_KEYS.forEach(k=>bets[k]=0);updated={...updated,balance:g.balance+refund,bets,undo:g.undo.filter(a=>!LUCKY_KEYS.includes(a.bet))};}return updated;}
 export function begin(g:Game):Game {if(g.phase!=='betting'||!total(g.bets)||g.visible!==4)return g;return {...g,phase:'closing',roundId:crypto.randomUUID(),current:null,handStage:'initial'};}
 function flip(g:Game,ids:string[],phase:'revealingOpponent'|'revealingThird'):Game {return {...g,phase,flipQueue:ids,flipIndex:0,revealed:[...new Set([...g.revealed,...ids.slice(0,1)])]};}
-export function openOpponent(g:Game):Game {if(g.phase!=='awaitOpponent')return g;const side=primarySide(g),cards=side?(side==='B'?g.player:g.banker).slice(0,2):[...g.player.slice(0,2),...g.banker.slice(0,2)];return flip(g,cards.filter(c=>!g.revealed.includes(c.id)).map(c=>c.id),'revealingOpponent');}
+export function openOpponent(g:Game):Game {if(g.phase!=='awaitOpponent')return g;const side=primarySide(g),cards=side&&!g.autoRound?(side==='B'?g.player:g.banker).slice(0,2):[...g.player.slice(0,2),...g.banker.slice(0,2)];return flip(g,cards.filter(c=>!g.revealed.includes(c.id)).map(c=>c.id),'revealingOpponent');}
 export function startSqueeze(g:Game):Game {return g.phase==='awaitSqueeze'&&primarySide(g)?{...g,phase:'squeezing'}:g;}
 export function directSqueeze(g:Game):Game {return g.phase==='awaitOpponent'&&primarySide(g)&&!g.autoRound?{...g,phase:'squeezing',ownFirst:true}:g;}
-export const canSkip=(g:Game)=>!g.autoRound&&['awaitOpponent','awaitSqueeze','squeezing','revealingOpponent'].includes(g.phase);
-export function skipRound(g:Game):Game {if(!canSkip(g))return g;const ids=[...g.player.slice(0,2),...g.banker.slice(0,2),...g.player.slice(2),...g.banker.slice(2)].filter(c=>!g.revealed.includes(c.id)).map(c=>c.id);const n={...g,autoRound:true,autoNext:true,ownFirst:false};return ids.length?flip(n,ids,'revealingOpponent'):{...n,phase:'checking'};}
+export const canSkip=(g:Game)=>!g.autoRound&&((g.phase==='betting'&&g.visible===4)||['awaitOpponent','awaitSqueeze','squeezing','revealingOpponent'].includes(g.phase));
+export function skipRound(g:Game):Game {if(!canSkip(g))return g;if(g.phase==='betting')return {...g,phase:'closing',roundId:crypto.randomUUID(),current:null,handStage:'initial',autoRound:true,autoNext:true,ownFirst:false};const ids=[...g.player.slice(0,2),...g.banker.slice(0,2),...g.player.slice(2),...g.banker.slice(2)].filter(c=>!g.revealed.includes(c.id)).map(c=>c.id);const n={...g,autoRound:true,autoNext:true,ownFirst:false};return ids.length?flip(n,ids,'revealingOpponent'):{...n,phase:'checking'};}
 export function restart(g:Game):Game {return {...initial(),mode:g.mode,luckyFirst50:g.luckyFirst50};}
 
 export function skipSqueeze(g:Game):Game {if(g.phase!=='squeezing'&&g.phase!=='awaitSqueeze')return g;return {...g,phase:'squeezing',revealed:[...new Set([...g.revealed,...squeezeCards(g).map(c=>c.id)])]};}
@@ -45,7 +45,7 @@ export function advance(g:Game):Game {
   const r=result(player,banker),s=settle(g.bets,r,g.mode);return {...g,phase:'result',handStage:'done',current:{...r,...s,id:g.roundId,shoeId:g.shoe.id,time:Date.now(),mode:g.mode,bets:{...g.bets}}};
  }
  if(g.phase==='result')return {...g,phase:'settling'};
- if(g.phase==='settling'&&g.current){if(g.history.some(h=>h.id===g.current!.id))return {...g,phase:'complete'};return {...g,phase:'complete',balance:g.balance+g.current.paid,previous:{...g.bets},history:[...g.history,g.current]};}return g;
+ if(g.phase==='settling'&&g.current){if(g.history.some(h=>h.id===g.current!.id))return {...g,phase:'complete'};return {...g,phase:'complete',balance:g.balance+g.current.paid,previous:total(g.bets)?{...g.bets}:g.previous,history:[...g.history,g.current]};}return g;
 }
 export function reveal(g:Game,id:string):Game {if(g.phase!=='squeezing'||g.revealed.includes(id)||!squeezeCards(g).some(c=>c.id===id))return g;return {...g,revealed:[...g.revealed,id]};}
 export function next(g:Game):Game {if(g.phase!=='complete')return g;return {...g,phase:'predeal',bets:emptyBets(),undo:[],current:null,player:[],banker:[],revealed:[],visible:0,handStage:'initial',flipQueue:[],flipIndex:0,ownFirst:false,autoRound:false,autoNext:false};}
